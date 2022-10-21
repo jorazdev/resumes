@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  
+  caddy:
+    image: caddy:latest
+    container_name: caddy_resumes
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./docker/caddy/resumes.com+4.pem:/etc/cert/resumes/resumes.com+4.pem
+      - ./docker/caddy/resumes.com+4-key.pem:/etc/cert/resumes/resumes.com+4-key.pem
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - .:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+
+  web:
+    build:
+      context: .
+    container_name: web_resumes
+    command: bash -c "npm run start:dev"
+    volumes:
+      - .:/srv
+
+  database:
+    container_name: mysql_resumes
+    image: mysql:8
+    ports:
+      - 3308:3306
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: resumes
+      MYSQL_USER: resumes
+      MYSQL_PASSWORD: resumes
+
+  phpmyadmin:
+    container_name: phpmyadmin_resumes
+    image: phpmyadmin/phpmyadmin
+    env_file:
+      - ./docker/env/phpmyadmin.env
+    ports:
+      - 81:80
+    links:
+      - database
+    environment:
+      PMA_HOST: mysql_resumes
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+  
+volumes:
+  caddy_data:
+  caddy_config:
+    

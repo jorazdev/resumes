@@ -1,0 +1,21 @@
+https://resumes.com {
+	# Set this path to your site's directory:
+	# root * /srv/public
+ 
+	tls /etc/cert/resumes/resumes.com+4.pem /etc/cert/resumes/resumes.com+4-key.pem
+
+	# Enable Gzip compression:
+	encode gzip
+
+	reverse_proxy web:3000  {
+        header_down Strict-Transport-Security max-age=31536000;
+    }
+
+	# Enable the static file resume:
+	file_server
+
+	# Enable HTTP request logging
+	log {
+		output file /var/log/caddy/access.log
+	}
+}
