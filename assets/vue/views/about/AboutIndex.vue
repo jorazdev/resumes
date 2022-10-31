@@ -1,9 +1,6 @@
 <template>
-    <div>
-        <h1>About template</h1>
-        <router-link to="/">
-            Home page
-        </router-link>
+    <div class="m-2">
+        <h1>About page</h1>
     </div>
 </template>
 
